@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>一只程序猪</title>
+  
+  <subtitle>爱生活 | 爱二梦 | 爱编程</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://yoursite.com/"/>
+  <updated>2019-02-13T05:19:30.931Z</updated>
+  <id>http://yoursite.com/</id>
+  
+  <author>
+    <name>arvin</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title></title>
+    <link href="http://yoursite.com/2019/02/12/setMonth%E9%97%AE%E9%A2%98/"/>
+    <id>http://yoursite.com/2019/02/12/setMonth问题/</id>
+    <published>2019-02-12T09:36:14.612Z</published>
+    <updated>2019-02-13T05:19:30.931Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="setMonth导致获取月份错误"><a href="#setMonth导致获取月份错误" class="headerlink" title="setMonth导致获取月份错误"></a>setMonth导致获取月份错误</h1><ol><li>问题重现</li></ol><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> // 比如今天是 2017-03-31 号，理论上后推一个月应该是4月   </span><br><span class="line">let now = new Date(new Date(&quot;2017-03-31&quot;).setMonth(new Date(&quot;2017-03-31&quot;).getMonth() + 1))</span><br><span class="line">console.log(&apos;now :&apos;, now.getMonth())</span><br><span class="line">// 结果是：now : 2017/5/1 上午8:00:00</span><br></pre></td></tr></table></figure><pre><code>实际的结果和预想的结果不一致！！</code></pre><p><strong>MDN解释：</strong></p><blockquote><p>If you do not specify the dayValue parameter, the value returned from the getDate() method is used.<br><br><br>If a parameter you specify is outside of the expected range, setMonth() attempts to update the date information in the Date object accordingly. For example, if you use 15 for monthValue, the year will be incremented by 1, and 3 will be used for month.<br><br><br>The current day of month will have an impact on the behaviour of this method. Conceptually it will add the number of days given by the current day of the month to the 1st day of the new month specified as the parameter, to return the new date. For example, if the current value is 31st August 2016, calling setMonth with a value of 1 will return 2nd March 2016. This is because in 2016 February had 29 days.</p></blockquote><p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/setMonth" target="_blank" rel="noopener">查看MDN解释</a></p><p>简单来说就是：对当前的日期调用setMonth操作时，如果当前月份的天数大于新的月份天数，那么日期会依次向后推。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">let now = new Date(new Date(&quot;2017-03-31&quot;).setMonth(new Date(&quot;2017-03-31&quot;).getMonth() + 1))</span><br><span class="line">console.log(&apos;now :&apos;, now.toLocaleString())</span><br><span class="line">// now : 2017/5/1 上午8:00:00</span><br><span class="line">// 2017-03-31 该月份有31天，当调用getMonth() + 1时</span><br><span class="line">// 理论上会加上当前月份的最大值31</span><br><span class="line">// 这时计算之后的日期是2017-04-31</span><br><span class="line">// 但是4月只有30天，所以后推一天变成2017-05-01,所以月份变成了5月</span><br></pre></td></tr></table></figure></p><ol start="2"><li>解决方法</li></ol><ul><li>setMonth之前先setDate(1)</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function getNextMonth(date) &#123;</span><br><span class="line">    const now = new Date(date);</span><br><span class="line">    now.setDate(1);</span><br><span class="line">    now.setMonth(now.getMonth() + 1);</span><br><span class="line">    return now.getMonth() + 1;</span><br><span class="line">&#125;</span><br><span class="line">console.log(getNextMonth(&quot;2017-03-31&quot;))</span><br><span class="line">// 4  结果正确</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;setMonth导致获取月份错误&quot;&gt;&lt;a href=&quot;#setMonth导致获取月份错误&quot; class=&quot;headerlink&quot; title=&quot;setMonth导致获取月份错误&quot;&gt;&lt;/a&gt;setMonth导致获取月份错误&lt;/h1&gt;&lt;ol&gt;
+&lt;li&gt;问题重现&lt;/li
+      
+    
+    </summary>
+    
+    
+  </entry>
+  
+</feed>
