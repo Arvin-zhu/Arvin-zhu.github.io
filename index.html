@@ -74,25 +74,34 @@
       
       
       
-        <h1 id="setMonth问题"><a href="#setMonth问题" class="headerlink" title="setMonth问题"></a>setMonth问题</h1><h4 id="当月有31天的时候，setMonth会出错"><a href="#当月有31天的时候，setMonth会出错" class="headerlink" title="当月有31天的时候，setMonth会出错"></a>当月有31天的时候，setMonth会出错</h4><ol>
-<li>一般做法</li>
+        <h1 id="setMonth导致获取月份错误"><a href="#setMonth导致获取月份错误" class="headerlink" title="setMonth导致获取月份错误"></a>setMonth导致获取月份错误</h1><ol>
+<li>问题重现</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"> // 比如今天是 2018-09-30 号，前一个月应该是 2018-08-30    </span><br><span class="line">let now = new Date(new Date(&quot;2018-09-30&quot;).setMonth(new Date(&quot;2018-09-30&quot;).getMonth() - 1))</span><br><span class="line">console.log(&apos;now :&apos;, now.toLocaleString())</span><br><span class="line">// now : 2018/8/30 上午8:00:00</span><br><span class="line"></span><br><span class="line">// 比如今天是 2018-10-31 号，前一个月没有 31 号，所以结果 2018-10-01：</span><br><span class="line">let now = new Date(new Date(&quot;2018-10-31&quot;).setMonth(new Date(&quot;2018-10-31&quot;).getMonth() - 1))</span><br><span class="line">console.log(&apos;now :&apos;, now.toLocaleString())</span><br><span class="line">// now : 2018/10/1 上午8:00:00</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> // 比如今天是 2017-03-31 号，理论上后推一个月应该是4月   </span><br><span class="line">let now = new Date(new Date(&quot;2017-03-31&quot;).setMonth(new Date(&quot;2017-03-31&quot;).getMonth() + 1))</span><br><span class="line">console.log(&apos;now :&apos;, now.getMonth())</span><br><span class="line">// 结果是：now : 2017/5/1 上午8:00:00</span><br></pre></td></tr></table></figure>
+<pre><code>实际的结果和预想的结果不一致！！
+</code></pre><p><strong>MDN解释：</strong></p>
+<blockquote>
+<p>If you do not specify the dayValue parameter, the value returned from the getDate() method is used.</p>
+</blockquote>
+<blockquote>
+<p>If a parameter you specify is outside of the expected range, setMonth() attempts to update the date information in the Date object accordingly. For example, if you use 15 for monthValue, the year will be incremented by 1, and 3 will be used for month.</p>
+</blockquote>
+<blockquote>
+<p>The current day of month will have an impact on the behaviour of this method. Conceptually it will add the number of days given by the current day of the month to the 1st day of the new month specified as the parameter, to return the new date. For example, if the current value is 31st August 2016, calling setMonth with a value of 1 will return 2nd March 2016. This is because in 2016 February had 29 days.</p>
+</blockquote>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/setMonth" target="_blank" rel="noopener">查看MDN解释</a></p>
+<p>简单解释就是：对当前的日期调用setMonth操作时，如果当前月份的天数大于新的月份天数，那么会依次向后推。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">let now = new Date(new Date(&quot;2017-03-31&quot;).setMonth(new Date(&quot;2017-03-31&quot;).getMonth() + 1))</span><br><span class="line">console.log(&apos;now :&apos;, now.toLocaleString())</span><br><span class="line">// now : 2017/5/1 上午8:00:00</span><br><span class="line">// 2017-03-31 该月份有31天，当调用getMonth() + 1时</span><br><span class="line">// 理论上会加上当前月份的最大值31</span><br><span class="line">// 这时计算之后的日期是2017-04-31</span><br><span class="line">// 但是4月只有30天，所以后推一天变成2017-05-01,所以月份变成了5月</span><br></pre></td></tr></table></figure></p>
 <ol start="2">
 <li>解决方法</li>
 </ol>
 <ul>
-<li>当前时间减去当前时间的天数</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function initLastMonth(date) &#123;</span><br><span class="line">    let monthDate = new Date(date);</span><br><span class="line">    let newDate = new Date(monthDate.getTime() - 24 * 60 * 60 * 1000 * monthDate.getDate())</span><br><span class="line">    console.log(&apos;newDate :&apos;, newDate.toLocaleString())</span><br><span class="line">    return newDate</span><br><span class="line">&#125;</span><br><span class="line">initLastMonth(&quot;2018-10-31&quot;)</span><br><span class="line">//  newDate : 2018/9/30 上午8:00:00</span><br></pre></td></tr></table></figure>
-<ul>
 <li>setMonth之前先setDate(1)</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">function initLastMonth(date) &#123;</span><br><span class="line">    const now = new Date(date);</span><br><span class="line">    now.setDate(1)</span><br><span class="line">    now.setMonth(now.getMonth() - 1)</span><br><span class="line">    console.log(now.toLocaleString()) </span><br><span class="line">    return now</span><br><span class="line">&#125;</span><br><span class="line">initLastMonth(&quot;2018-10-31&quot;)</span><br><span class="line">// 2018/9/1 上午8:00:00</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function getNextMonth(date) &#123;</span><br><span class="line">    const now = new Date(date);</span><br><span class="line">    now.setDate(1);</span><br><span class="line">    now.setMonth(now.getMonth() + 1);</span><br><span class="line">    return now.getMonth() + 1;</span><br><span class="line">&#125;</span><br><span class="line">console.log(getNextMonth(&quot;2017-03-31&quot;))</span><br><span class="line">// 4  结果正确</span><br></pre></td></tr></table></figure>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/02/12/setMonth问题/" data-id="cjs1liwe70000a9a2sd6ty0n7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/02/12/setMonth问题/" data-id="cjs2pl4890000pra2bmts8147" class="article-share-link">Share</a>
       
     </footer>
 
