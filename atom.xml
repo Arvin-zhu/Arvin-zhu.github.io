@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>一只程序猪</title>
   
-  <subtitle>爱生活 | 爱二梦 | 爱编程</subtitle>
+  <subtitle>爱二梦 | 爱生活 | 爱编程</subtitle>
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
