@@ -71,7 +71,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/02/19/react-native开发碰到的问题及插件整理/" data-id="cjtjgyco100027ua2l6ebg3t9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/02/19/react-native开发碰到的问题及插件整理/" data-id="cjtji4mpa0005kqa2zxoj0cjv" class="article-share-link">Share</a>
       
     </footer>
 
@@ -103,6 +103,26 @@
 
   
     
+  <div class="gitalk" id="gitalk-container"></div>
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <!-- <script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '80ecd32cfdcc10368334',
+        clientSecret: 'a4358b18ffad9109aa78e1c03c1bc513edc166a2',
+        repo: 'selfBlogGitTalk',
+        owner: 'Arvin-zhu',
+        admin: ['Arvin-zhu'],
+        // id: location.pathname,      // Ensure uniqueness and length less than 50
+        id: md5(location.pathname),
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+  gitalk.render('gitalk-container')
+  </script>
+
   
 
 </article>
